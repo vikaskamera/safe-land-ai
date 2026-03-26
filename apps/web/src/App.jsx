@@ -63,23 +63,33 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-body);
 .app { display: flex; flex-direction: column; min-height: 100vh; }
 .topbar {
   position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-  height: 60px; display: flex; align-items: center;
+  min-height: 60px; display: flex; align-items: center;
   padding: 0 2rem;
   background: rgba(6,10,18,0.92);
   backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--border);
+  gap: 1rem;
 }
 .light .topbar { background: rgba(240,244,248,0.92); }
-.topbar-logo { font-family: var(--font-hd); font-size: 1.1rem; font-weight: 700; color: var(--accent); letter-spacing: 2px; cursor:pointer; }
+.topbar-logo { font-family: var(--font-hd); font-size: 1.1rem; font-weight: 700; color: var(--accent); letter-spacing: 2px; cursor:pointer; flex-shrink: 0; }
 .topbar-logo span { color: var(--accent2); }
-.topbar-nav { display: flex; gap: 0.15rem; margin-left: 2.5rem; }
+.topbar-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.15rem;
+  margin-left: 1.5rem;
+  min-width: 0;
+  flex: 1;
+}
+.topbar-menu-toggle { display: none; }
 .nav-btn {
   background: none; border: none; color: var(--text2); font-family: var(--font-body);
-  font-size: 0.82rem; font-weight: 500; padding: 6px 12px; border-radius: 4px;
+  font-size: 0.82rem; font-weight: 500; padding: 6px 12px; border-radius: 999px;
   cursor: pointer; transition: all 0.2s; letter-spacing: 0.5px; text-transform: uppercase;
+  white-space: nowrap; flex-shrink: 0;
 }
 .nav-btn:hover, .nav-btn.active { color: var(--accent); background: rgba(0,200,255,0.08); }
-.topbar-right { margin-left: auto; display: flex; align-items: center; gap: 1rem; }
+.topbar-right { margin-left: auto; display: flex; align-items: center; justify-content: flex-end; gap: 0.75rem; flex-shrink: 0; }
 .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent2); box-shadow: var(--glow2); animation: pulse 2s infinite; }
 .status-dot.offline { background: var(--danger); box-shadow: 0 0 12px rgba(255,51,85,0.5); }
 @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
@@ -302,6 +312,8 @@ tr:hover td { background: rgba(0,200,255,0.03); }
 .predict-panel { max-height: calc(100vh - 150px); overflow: hidden; }
 .predict-scroll { max-height: calc(100vh - 250px); overflow-y: auto; padding-right: 0.35rem; }
 .predict-result-card { align-self: start; }
+.predict-actions { display: flex; justify-content: stretch; }
+.predict-actions .btn { width: 100%; }
 .predict-form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.9rem; }
 .predict-field {
   background: linear-gradient(180deg, rgba(0,200,255,0.06), rgba(255,255,255,0.01));
@@ -327,12 +339,67 @@ tr:hover td { background: rgba(0,200,255,0.03); }
 @media(max-width:720px){
   .predict-form-grid { grid-template-columns: 1fr; }
   .predict-summary { grid-template-columns: 1fr; }
+  .predict-result-card { margin-bottom: 1rem !important; }
 }
 @media(max-width:1100px){
   .predict-panel, .predict-scroll { max-height: none; overflow: visible; }
   .sidebar, .sidebar.collapsed { width: 100%; position: static; border-right: none; border-bottom: 1px solid var(--border); }
   .dash-main, .dash-main.sidebar-collapsed { margin-left: 0; }
   .sidebar-status-live { flex-wrap: wrap; }
+}
+@media(max-width:900px){
+  .topbar { padding: 0.75rem 1rem; flex-wrap: wrap; height: auto; gap: 0.75rem; }
+  .topbar-menu-toggle { display: inline-flex; align-items: center; justify-content: center; margin-left: auto; }
+  .topbar-nav {
+    display: none;
+    position: absolute;
+    top: calc(100% + 0.6rem);
+    right: 1rem;
+    width: min(320px, calc(100vw - 2rem));
+    padding: 0.5rem;
+    margin-left: 0;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    box-shadow: var(--glow);
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.25rem;
+    z-index: 110;
+  }
+  .topbar-nav.open { display: flex; }
+  .nav-btn { width: 100%; text-align: left; border-radius: 10px; padding: 0.8rem 0.95rem; }
+  .topbar-right { gap: 0.6rem; margin-left: auto; }
+  .page { padding-top: 108px; }
+  .dashboard-layout { margin-top: 108px; }
+  .dash-main { padding: 1.25rem; }
+}
+@media(max-width:720px){
+  .section, .section-sm { padding: 3.5rem 1rem; }
+  .card { padding: 1.1rem; }
+  .dashboard-layout { display: block; }
+  .sidebar, .sidebar.collapsed { padding: 1rem 0; }
+  .sidebar-section { margin-bottom: 1rem; }
+  .sidebar-toggle { width: calc(100% - 1.5rem); margin: 0 0.75rem 0.9rem; }
+  .sidebar-btn { padding: 10px 12px; }
+  .dash-main { padding: 1rem; }
+  .telem-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
+  .toast { left: 1rem; right: 1rem; bottom: 1rem; max-width: none; }
+  .modal { margin: 1rem; max-width: none; }
+  .topbar-right { width: 100%; justify-content: space-between; flex-wrap: wrap; }
+  .page { padding-top: 144px; }
+  .dashboard-layout { margin-top: 144px; }
+}
+@media(max-width:560px){
+  .hero { padding: 7rem 1rem 3rem; }
+  .hero-cta { flex-direction: column; }
+  .btn { width: 100%; }
+  .topbar-logo { font-size: 0.95rem; }
+  .topbar-nav { right: 0.75rem; width: calc(100vw - 1.5rem); }
+  .nav-btn { font-size: 0.72rem; padding: 0.7rem 0.8rem; }
+  .topbar-right .btn,
+  .topbar-right .btn-icon { width: auto; }
+  .predict-field-header { flex-direction: column; align-items: flex-start; }
 }
 
 /* ── RECOMMENDATION ── */
@@ -661,21 +728,35 @@ function Topbar({ page, setPage, wsStatus }) {
   const { user, setUser, logout } = useAuth();
   const [showAuth, setShowAuth] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [, setToken] = useState(localStorage.getItem("sl_token"));
 
   const nav = ["Home", "About", "Technology", "Documentation", "Dashboard", "Simulation", "Reports", "Contact"];
+  const displayName = user?.full_name || user?.username;
 
   const handleLogin = (tok) => { setToken(tok); setShowAuth(false); window.location.reload(); };
+  const handleNavigate = (targetPage) => {
+    setPage(targetPage);
+    setMobileMenuOpen(false);
+  };
 
   return (
     <>
       <nav className="topbar">
-        <div className="topbar-logo" onClick={() => setPage("Home")}>
+        <div className="topbar-logo" onClick={() => handleNavigate("Home")}>
           SAFE<span>-LAND-</span>AI
         </div>
-        <div className="topbar-nav" style={{ display: "flex", flexWrap: "wrap" }}>
+        <button
+          className="btn-icon topbar-menu-toggle"
+          onClick={() => setMobileMenuOpen(open => !open)}
+          aria-label="Toggle navigation menu"
+          aria-expanded={mobileMenuOpen}
+        >
+          {mobileMenuOpen ? "X" : "☰"}
+        </button>
+        <div className={`topbar-nav ${mobileMenuOpen ? "open" : ""}`}>
           {nav.map(n => (
-            <button key={n} className={`nav-btn ${page === n ? "active" : ""}`} onClick={() => setPage(n)}>
+            <button key={n} className={`nav-btn ${page === n ? "active" : ""}`} onClick={() => handleNavigate(n)}>
               {n}
             </button>
           ))}
@@ -688,8 +769,8 @@ function Topbar({ page, setPage, wsStatus }) {
           </button>
           {user ? (
             <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-              <span style={{ fontSize: "0.8rem", color: "var(--text2)" }}>
-                {user.username} <span className="tag" style={{ marginLeft: "4px" }}>{user.role}</span>
+              <span style={{ fontSize: "0.8rem", color: "var(--text2)", display: "inline-flex", alignItems: "center", gap: "0.35rem" }}>
+                {displayName} <span className="tag">{user.role}</span>
               </span>
               <button className="btn btn-ghost btn-sm" onClick={() => setShowProfile(true)}>Profile</button>
               <button className="btn btn-ghost btn-sm" onClick={logout}>Logout</button>
@@ -1183,6 +1264,7 @@ function DashboardPage({ telemetry, prediction, wsStatus }) {
   });
   const [manualResult, setManualResult] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [explainData, setExplainData] = useState(null);
   const [toast, setToast] = useState(null);
   const predictionTimerRef = useRef(null);
@@ -1245,6 +1327,37 @@ function DashboardPage({ telemetry, prediction, wsStatus }) {
     } catch (e) {
       if (!silent) setToast({ msg: e.message, type: "error" });
     } finally { setLoading(false); }
+  };
+
+  const savePredictionReport = async () => {
+    const normalizedPayload = normalizePredictPayload(form);
+    if (!normalizedPayload) {
+      setToast({ msg: "Enter valid telemetry values before saving", type: "error" });
+      return;
+    }
+
+    setSaving(true);
+    try {
+      const token = localStorage.getItem("sl_token");
+      const res = await fetch(`${API_BASE}/api/predict`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+        body: JSON.stringify(normalizedPayload)
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        const detail = Array.isArray(data.detail)
+          ? data.detail.map(item => item.msg).join(", ")
+          : data.detail;
+        throw new Error(detail || "Failed to save report");
+      }
+      setManualResult(data);
+      setToast({ msg: "Prediction saved to Reports", type: "success" });
+    } catch (e) {
+      setToast({ msg: e.message, type: "error" });
+    } finally {
+      setSaving(false);
+    }
   };
 
   useEffect(() => {
@@ -1397,9 +1510,9 @@ function DashboardPage({ telemetry, prediction, wsStatus }) {
               <div className="predict-meta">
                 <div>
                   <div className="card-title">◈ Telemetry Input</div>
-                  <div className="text-dim">Adjust the aircraft state and the model updates automatically.</div>
+                  <div className="text-dim">Adjust the aircraft state for live preview, then click Predict to save the report.</div>
                 </div>
-                <div className="predict-meta-chip">{loading ? "Refreshing prediction..." : "Live preview active"}</div>
+                <div className="predict-meta-chip">{saving ? "Saving report..." : loading ? "Refreshing prediction..." : "Live preview active"}</div>
               </div>
               <div className="predict-scroll">
               <div className="predict-form-grid">
@@ -1485,6 +1598,11 @@ function DashboardPage({ telemetry, prediction, wsStatus }) {
                     Adjust any field to generate a live prediction preview.
                   </div>
                 )}
+              </div>
+              <div className="predict-actions">
+                <button className="btn btn-primary" onClick={savePredictionReport} disabled={saving || loading}>
+                  {saving ? "Saving..." : "Predict"}
+                </button>
               </div>
             </div>
           </div>
