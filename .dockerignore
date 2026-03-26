@@ -1,0 +1,12 @@
+.env
+.env.*
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+logs/
+safe_land.db
+apps/web/node_modules/
+apps/web/build/
+{apps/

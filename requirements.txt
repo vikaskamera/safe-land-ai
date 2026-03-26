@@ -1,0 +1,14 @@
+fastapi==0.110.0
+uvicorn[standard]==0.27.1
+sqlalchemy>=2.0.40,<2.1
+pydantic[email]>=2.11,<3
+pydantic-settings>=2.10,<3
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+bcrypt==4.0.1
+scikit-learn>=1.7,<1.9
+numpy>=2.2,<3
+python-multipart==0.0.9
+psutil==5.9.8
+aiofiles==23.2.1
+python-dotenv==1.0.1

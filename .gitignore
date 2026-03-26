@@ -1,0 +1,40 @@
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+.venv/
+venv/
+ENV/
+env/
+
+# Logs and runtime files
+logs/
+*.log
+
+# Database and generated model artifacts
+safe_land.db
+ml_models/*.pkl
+
+# Frontend
+apps/web/node_modules/
+apps/web/build/
+apps/web/.eslintcache
+
+# OS / editors
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Local leftover path artifact
+{apps/
