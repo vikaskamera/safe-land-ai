@@ -73,22 +73,89 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-body);
 .light .topbar { background: rgba(240,244,248,0.92); }
 .topbar-logo { font-family: var(--font-hd); font-size: 1.1rem; font-weight: 700; color: var(--accent); letter-spacing: 2px; cursor:pointer; flex-shrink: 0; }
 .topbar-logo span { color: var(--accent2); }
+
 .topbar-nav {
+  position: fixed;
+  top: 0;
+  right: -320px;
+  width: 300px;
+  height: 100vh;
+  background: rgba(12, 17, 32, 0.95);
+  backdrop-filter: blur(20px);
+  border-left: 1px solid var(--border);
   display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  padding: 6rem 1.5rem 2rem;
+  gap: 0.5rem;
+  transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 110;
+  margin: 0;
+}
+.light .topbar-nav { background: rgba(255, 255, 255, 0.95); }
+.topbar-nav.open {
+  right: 0;
+  box-shadow: -10px 0 30px rgba(0,0,0,0.5);
+}
+
+.topbar-menu-toggle {
+  display: inline-flex;
   align-items: center;
-  gap: 0.15rem;
-  margin-left: 1.5rem;
-  min-width: 0;
-  flex: 1;
+  justify-content: center;
+  margin-left: 0.5rem;
+  z-index: 120;
+  position: relative;
 }
-.topbar-menu-toggle { display: none; }
+
 .nav-btn {
-  background: none; border: none; color: var(--text2); font-family: var(--font-body);
-  font-size: 0.82rem; font-weight: 500; padding: 6px 12px; border-radius: 999px;
-  cursor: pointer; transition: all 0.2s; letter-spacing: 0.5px; text-transform: uppercase;
-  white-space: nowrap; flex-shrink: 0;
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text2);
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 500;
+  padding: 12px 18px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  text-align: left;
+  width: 100%;
 }
-.nav-btn:hover, .nav-btn.active { color: var(--accent); background: rgba(0,200,255,0.08); }
+.nav-btn:hover {
+  border-color: var(--border);
+  transform: translateX(4px);
+  color: var(--accent);
+  background: transparent;
+}
+.nav-btn.active {
+  color: var(--bg);
+  background: var(--accent);
+  border-color: var(--accent);
+  box-shadow: none;
+  transform: translateX(4px);
+}
+.light .nav-btn.active { color: var(--bg); }
+
+.nav-overlay {
+  display: block;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  backdrop-filter: blur(4px);
+  z-index: 105;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+.nav-overlay.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
 .topbar-right { margin-left: auto; display: flex; align-items: center; justify-content: flex-end; gap: 0.75rem; flex-shrink: 0; }
 .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent2); box-shadow: var(--glow2); animation: pulse 2s infinite; }
 .status-dot.offline { background: var(--danger); box-shadow: 0 0 12px rgba(255,51,85,0.5); }
@@ -343,32 +410,23 @@ tr:hover td { background: rgba(0,200,255,0.03); }
 }
 @media(max-width:1100px){
   .predict-panel, .predict-scroll { max-height: none; overflow: visible; }
-  .sidebar, .sidebar.collapsed { width: 100%; position: static; border-right: none; border-bottom: 1px solid var(--border); }
-  .dash-main, .dash-main.sidebar-collapsed { margin-left: 0; }
-  .sidebar-status-live { flex-wrap: wrap; }
+  .dashboard-layout { display: block; }
+  .sidebar, .sidebar.collapsed {
+    width: 100%; position: static; border-right: none; border-bottom: 1px solid rgba(255,255,255,0.05);
+    padding: 0.75rem 1rem; display: flex; align-items: center; justify-content: flex-start;
+    gap: 0.5rem; overflow-x: auto; white-space: nowrap; flex-wrap: nowrap;
+    -ms-overflow-style: none; scrollbar-width: none;
+  }
+  .sidebar::-webkit-scrollbar { display: none; }
+  .sidebar-section { margin-bottom: 0; display: flex; align-items: center; gap: 0.5rem; padding: 0; }
+  .sidebar-label { display: none; }
+  .sidebar-btn { width: auto; white-space: nowrap; padding: 8px 16px; justify-content: center; }
+  .sidebar-toggle, .sidebar-status-card { display: none; }
+  .dash-main, .dash-main.sidebar-collapsed { margin-left: 0; padding: 1.5rem; }
 }
+/* Navigation breakpoint logic moved to global scope per user request */
 @media(max-width:900px){
   .topbar { padding: 0.75rem 1rem; flex-wrap: wrap; height: auto; gap: 0.75rem; }
-  .topbar-menu-toggle { display: inline-flex; align-items: center; justify-content: center; margin-left: auto; }
-  .topbar-nav {
-    display: none;
-    position: absolute;
-    top: calc(100% + 0.6rem);
-    right: 1rem;
-    width: min(320px, calc(100vw - 2rem));
-    padding: 0.5rem;
-    margin-left: 0;
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    box-shadow: var(--glow);
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0.25rem;
-    z-index: 110;
-  }
-  .topbar-nav.open { display: flex; }
-  .nav-btn { width: 100%; text-align: left; border-radius: 10px; padding: 0.8rem 0.95rem; }
   .topbar-right { gap: 0.6rem; margin-left: auto; }
   .page { padding-top: 108px; }
   .dashboard-layout { margin-top: 108px; }
@@ -377,9 +435,6 @@ tr:hover td { background: rgba(0,200,255,0.03); }
 @media(max-width:720px){
   .section, .section-sm { padding: 3.5rem 1rem; }
   .card { padding: 1.1rem; }
-  .dashboard-layout { display: block; }
-  .sidebar, .sidebar.collapsed { padding: 1rem 0; }
-  .sidebar-section { margin-bottom: 1rem; }
   .sidebar-toggle { width: calc(100% - 1.5rem); margin: 0 0.75rem 0.9rem; }
   .sidebar-btn { padding: 10px 12px; }
   .dash-main { padding: 1rem; }
@@ -389,14 +444,16 @@ tr:hover td { background: rgba(0,200,255,0.03); }
   .topbar-right { width: 100%; justify-content: space-between; flex-wrap: wrap; }
   .page { padding-top: 144px; }
   .dashboard-layout { margin-top: 144px; }
+  .nav-user-role { display: none !important; }
 }
 @media(max-width:560px){
   .hero { padding: 7rem 1rem 3rem; }
   .hero-cta { flex-direction: column; }
   .btn { width: 100%; }
   .topbar-logo { font-size: 0.95rem; }
-  .topbar-nav { right: 0.75rem; width: calc(100vw - 1.5rem); }
-  .nav-btn { font-size: 0.72rem; padding: 0.7rem 0.8rem; }
+  .topbar-nav { width: 100vw; border-left: none; right: -100vw; }
+  .topbar-nav.open { right: 0; }
+  .nav-btn { font-size: 0.85rem; padding: 12px 14px; }
   .topbar-right .btn,
   .topbar-right .btn-icon { width: auto; }
   .predict-field-header { flex-direction: column; align-items: flex-start; }
@@ -731,7 +788,7 @@ function Topbar({ page, setPage, wsStatus }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [, setToken] = useState(localStorage.getItem("sl_token"));
 
-  const nav = ["Home", "About", "Technology", "Documentation", "Dashboard", "Simulation", "Reports", "Contact"];
+  const nav = ["Home", "About", "Resources", "Documentation", "Dashboard", "Simulation", "Reports", "Contact"];
   const displayName = user?.full_name || user?.username;
 
   const handleLogin = (tok) => { setToken(tok); setShowAuth(false); window.location.reload(); };
@@ -746,14 +803,6 @@ function Topbar({ page, setPage, wsStatus }) {
         <div className="topbar-logo" onClick={() => handleNavigate("Home")}>
           SAFE<span>-LAND-</span>AI
         </div>
-        <button
-          className="btn-icon topbar-menu-toggle"
-          onClick={() => setMobileMenuOpen(open => !open)}
-          aria-label="Toggle navigation menu"
-          aria-expanded={mobileMenuOpen}
-        >
-          {mobileMenuOpen ? "X" : "☰"}
-        </button>
         <div className={`topbar-nav ${mobileMenuOpen ? "open" : ""}`}>
           {nav.map(n => (
             <button key={n} className={`nav-btn ${page === n ? "active" : ""}`} onClick={() => handleNavigate(n)}>
@@ -770,7 +819,7 @@ function Topbar({ page, setPage, wsStatus }) {
           {user ? (
             <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
               <span style={{ fontSize: "0.8rem", color: "var(--text2)", display: "inline-flex", alignItems: "center", gap: "0.35rem" }}>
-                {displayName} <span className="tag">{user.role}</span>
+                <span className="nav-user-name">{displayName}</span> <span className="tag nav-user-role">{user.role}</span>
               </span>
               <button className="btn btn-ghost btn-sm" onClick={() => setShowProfile(true)}>Profile</button>
               <button className="btn btn-ghost btn-sm" onClick={logout}>Logout</button>
@@ -778,7 +827,24 @@ function Topbar({ page, setPage, wsStatus }) {
           ) : (
             <button className="btn btn-primary btn-sm" onClick={() => setShowAuth(true)}>Login</button>
           )}
+          <button
+            className="btn-icon topbar-menu-toggle"
+            onClick={() => setMobileMenuOpen(open => !open)}
+            aria-label="Toggle navigation menu"
+            aria-expanded={mobileMenuOpen}
+          >
+            {mobileMenuOpen ? (
+              <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            ) : (
+              <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            )}
+          </button>
         </div>
+        <div className={`nav-overlay ${mobileMenuOpen ? "open" : ""}`} onClick={() => setMobileMenuOpen(false)} />
       </nav>
       {showAuth && <AuthModal onClose={() => setShowAuth(false)} onSuccess={handleLogin} />}
       {showProfile && <ProfileModal user={user} onClose={() => setShowProfile(false)} onSaved={setUser} />}
@@ -1007,79 +1073,113 @@ function AboutPage() {
   );
 }
 
-// ─── TECHNOLOGY PAGE ──────────────────────────────────────────────────────────
-function TechnologyPage() {
-  const stack = [
-    { name: "FastAPI", category: "Backend", color: "#009688", desc: "Asynchronous Python web framework with automatic OpenAPI documentation, dependency injection, and Pydantic validation.", features: ["Async/await native", "Auto OpenAPI docs", "Dependency injection", "Pydantic validation"] },
-    { name: "React 18", category: "Frontend", color: "#61dafb", desc: "Component-based UI library with hooks for state management, real-time telemetry rendering, and responsive dashboard layout.", features: ["Hooks architecture", "Context API", "WebSocket integration", "Responsive design"] },
-    { name: "Random Forest", category: "ML Engine", color: "#ff9500", desc: "200-tree ensemble classifier trained on synthesized aviation telemetry data. Outputs crash probability and feature importance.", features: ["200 estimators", "Max depth 12", "Feature importance", "Pickle serialization"] },
-    { name: "SQLite + SQLAlchemy", category: "Database", color: "#00c8ff", desc: "Embedded relational database with ORM abstraction for flight records, user management, and audit trails.", features: ["SQLAlchemy ORM", "Alembic migrations", "Relationship mapping", "Session management"] },
-    { name: "WebSockets", category: "Realtime", color: "#00ff9d", desc: "Full-duplex telemetry channel delivering 1Hz aircraft parameter updates with automatic REST API fallback.", features: ["1Hz data rate", "Auto-reconnect", "REST fallback", "Connection pooling"] },
-    { name: "JWT Auth", category: "Security", color: "#ff3355", desc: "Stateless authentication using HMAC-SHA256 signed tokens with bcrypt password hashing and role-based access control.", features: ["Access + refresh tokens", "bcrypt hashing", "Role-based access", "Token rotation"] },
+
+// ─── DOCUMENTATION PAGE ───────────────────────────────────────────────────────
+// Resources Page
+function ResourcesPage() {
+  const caseStudies = [
+    {
+      title: "Emirates Flight 521",
+      year: "2016",
+      aircraft: "Boeing 777-300",
+      category: "Go-around / hard runway contact",
+      color: "#ff9500",
+      summary: "During an attempted go-around in Dubai, the aircraft settled back onto the runway and was destroyed by post-landing fire. The event is widely studied for automation mode awareness, energy management, and go-around execution under pressure.",
+      lessons: ["Monitor thrust and pitch changes closely", "Confirm go-around mode engagement", "Guard against late configuration surprises", "Train for high-workload transition moments"],
+    },
+    {
+      title: "Asiana Flight 214",
+      year: "2013",
+      aircraft: "Boeing 777-200ER",
+      category: "Unstable approach / severe hard landing",
+      color: "#00c8ff",
+      summary: "The aircraft approached San Francisco below glide path and at insufficient speed, striking the seawall before runway impact. It remains a major case study in visual approach discipline, automation dependency, and stabilized approach criteria.",
+      lessons: ["Enforce stabilized approach gates", "Intervene early when speed decays", "Use clear pilot monitoring callouts", "Do not continue an unstable descent"],
+    },
+    {
+      title: "Pegasus Airlines Flight 8622",
+      year: "2018",
+      aircraft: "Boeing 737-800",
+      category: "Runway excursion after landing",
+      color: "#00ff9d",
+      summary: "After landing at Trabzon, the aircraft overran and came to rest on a steep embankment near the shoreline. Safety discussions around the event focus on landing rollout control, runway conditions, and rapid decision-making after touchdown.",
+      lessons: ["Respect contaminated runway margins", "Track deceleration effectiveness immediately", "Prepare for runway-end risk on short fields", "Review excursion recovery decision paths"],
+    },
+    {
+      title: "FedEx Flight 80",
+      year: "2009",
+      aircraft: "McDonnell Douglas MD-11",
+      category: "Bounced landing / loss of control",
+      color: "#ff3355",
+      summary: "On landing at Narita, a hard touchdown led to a bounce sequence and loss of control. The case is frequently used in recurrent training because it highlights bounce recovery technique, crosswind handling, and the dangers of aggressive correction inputs.",
+      lessons: ["Avoid overcorrecting after the first bounce", "Apply bounce recovery procedures consistently", "Respect aircraft-specific landing traits", "Crosswind technique matters most near touchdown"],
+    },
+  ];
+
+  const warningSigns = [
+    "High descent rate below 500 ft with delayed correction",
+    "Speed instability during visual or manual approach",
+    "Floating followed by rushed flare input",
+    "Incomplete cross-check between PF and PM during landing transition",
+  ];
+
+  const analystChecklist = [
+    "Review vertical speed, pitch, and groundspeed trends in the last 30 seconds before touchdown.",
+    "Check whether the approach met stabilized criteria at the operator's decision gates.",
+    "Compare touchdown point, bounce sequence, and rollout profile against runway available.",
+    "Capture automation mode changes and crew callout timing in the event timeline.",
   ];
 
   return (
     <div className="page">
       <section className="section">
         <div className="page-header">
-          <div className="tag" style={{ marginBottom: "1rem" }}>TECHNOLOGY STACK</div>
-          <h1>Built on <span className="text-accent">Battle-Tested</span><br />Aerospace-Grade Technology</h1>
-          <p>Every component was selected for reliability, performance, and production readiness.</p>
+          <div className="tag" style={{ marginBottom: "1rem" }}>RESOURCES</div>
+          <h1>Real case studies on <span className="text-accent">hard landings</span><br />and runway incidents</h1>
+          <p>Use these examples to study unstable approaches, hard touchdown patterns, bounced landings, and runway excursion risks.</p>
         </div>
 
         <div className="grid-2" style={{ marginBottom: "3rem" }}>
-          {stack.map((tech, i) => (
-            <div key={i} className="card" style={{ borderColor: `${tech.color}30` }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "0.75rem" }}>
+          {caseStudies.map((study, i) => (
+            <div key={i} className="card" style={{ borderColor: `${study.color}30` }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "1rem", marginBottom: "0.9rem" }}>
                 <div>
-                  <div style={{ fontFamily: "var(--font-hd)", fontSize: "1rem", color: tech.color, letterSpacing: "1px" }}>{tech.name}</div>
-                  <div style={{ fontSize: "0.72rem", color: "var(--text2)", marginTop: "2px" }}>{tech.category}</div>
+                  <div style={{ fontFamily: "var(--font-hd)", fontSize: "1rem", color: study.color, letterSpacing: "1px" }}>{study.title}</div>
+                  <div style={{ fontSize: "0.72rem", color: "var(--text2)", marginTop: "2px" }}>{study.year} - {study.aircraft}</div>
                 </div>
-                <div style={{ width: 10, height: 10, borderRadius: "50%", background: tech.color, boxShadow: `0 0 12px ${tech.color}` }} />
+                <span style={{ padding: "4px 8px", borderRadius: "999px", background: `${study.color}14`, border: `1px solid ${study.color}35`, color: study.color, fontSize: "0.68rem", fontFamily: "var(--font-mono)" }}>
+                  {study.category}
+                </span>
               </div>
-              <p style={{ color: "var(--text2)", fontSize: "0.83rem", lineHeight: 1.7, marginBottom: "1rem" }}>{tech.desc}</p>
+              <p style={{ color: "var(--text2)", fontSize: "0.83rem", lineHeight: 1.7, marginBottom: "1rem" }}>{study.summary}</p>
               <div style={{ display: "flex", flexWrap: "wrap", gap: "0.35rem" }}>
-                {tech.features.map((f, j) => (
-                  <span key={j} style={{ padding: "3px 8px", background: `${tech.color}12`, border: `1px solid ${tech.color}30`, borderRadius: "4px", fontSize: "0.7rem", color: tech.color, fontFamily: "var(--font-mono)" }}>{f}</span>
+                {study.lessons.map((lesson, j) => (
+                  <span key={j} style={{ padding: "3px 8px", background: `${study.color}12`, border: `1px solid ${study.color}30`, borderRadius: "4px", fontSize: "0.7rem", color: study.color, fontFamily: "var(--font-mono)" }}>{lesson}</span>
                 ))}
               </div>
             </div>
           ))}
         </div>
 
-        {/* Architecture visualization */}
-        <div className="card">
-          <div className="card-title">◈ System Architecture Diagram</div>
-          <div style={{ padding: "1rem 0" }}>
-            {/* Layer 1 - Client */}
-            <div style={{ textAlign: "center", marginBottom: "0.5rem", fontSize: "0.7rem", color: "var(--text2)", fontFamily: "var(--font-mono)", letterSpacing: "2px" }}>CLIENT LAYER</div>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: "0.5rem", marginBottom: "0.5rem" }}>
-              {["Browser / Dashboard", "WebSocket Client", "REST API Client"].map((n, i) => (
-                <div key={i} style={{ background: "rgba(97,218,251,0.08)", border: "1px solid rgba(97,218,251,0.2)", borderRadius: "6px", padding: "10px", textAlign: "center", fontSize: "0.78rem", fontFamily: "var(--font-mono)", color: "#61dafb" }}>{n}</div>
+        <div className="grid-2">
+          <div className="card">
+            <div className="card-title">Common Warning Signs</div>
+            <div style={{ display: "grid", gap: "0.75rem" }}>
+              {warningSigns.map((item, i) => (
+                <div key={i} style={{ padding: "12px", borderRadius: "8px", border: "1px solid var(--border)", background: "rgba(255,255,255,0.02)", color: "var(--text2)", lineHeight: 1.6 }}>
+                  {item}
+                </div>
               ))}
             </div>
-            <div style={{ textAlign: "center", color: "var(--accent)", marginBottom: "0.5rem" }}>↕ HTTPS / WSS</div>
-            {/* Layer 2 - API */}
-            <div style={{ textAlign: "center", marginBottom: "0.5rem", fontSize: "0.7rem", color: "var(--text2)", fontFamily: "var(--font-mono)", letterSpacing: "2px" }}>API LAYER</div>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: "0.5rem", marginBottom: "0.5rem" }}>
-              {["Auth Routes", "Predict Routes", "Admin Routes", "WS /ws Endpoint"].map((n, i) => (
-                <div key={i} style={{ background: "rgba(0,200,255,0.07)", border: "1px solid var(--border)", borderRadius: "6px", padding: "10px", textAlign: "center", fontSize: "0.73rem", fontFamily: "var(--font-mono)" }}>{n}</div>
-              ))}
-            </div>
-            <div style={{ textAlign: "center", color: "var(--accent)", marginBottom: "0.5rem" }}>↕</div>
-            {/* Layer 3 - Services */}
-            <div style={{ textAlign: "center", marginBottom: "0.5rem", fontSize: "0.7rem", color: "var(--text2)", fontFamily: "var(--font-mono)", letterSpacing: "2px" }}>SERVICE LAYER</div>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: "0.5rem", marginBottom: "0.5rem" }}>
-              {[["Auth Service", "#ff3355"], ["Prediction Service", "#ff9500"], ["Telemetry Service", "#00ff9d"]].map(([n, c], i) => (
-                <div key={i} style={{ background: `${c}10`, border: `1px solid ${c}30`, borderRadius: "6px", padding: "10px", textAlign: "center", fontSize: "0.78rem", fontFamily: "var(--font-mono)", color: c }}>{n}</div>
-              ))}
-            </div>
-            <div style={{ textAlign: "center", color: "var(--accent)", marginBottom: "0.5rem" }}>↕</div>
-            {/* Layer 4 - Data */}
-            <div style={{ textAlign: "center", marginBottom: "0.5rem", fontSize: "0.7rem", color: "var(--text2)", fontFamily: "var(--font-mono)", letterSpacing: "2px" }}>DATA LAYER</div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
-              {[["SQLite Database", "#00c8ff"], ["Random Forest Model (.pkl)", "#ff9500"]].map(([n, c], i) => (
-                <div key={i} style={{ background: `${c}10`, border: `1px solid ${c}30`, borderRadius: "6px", padding: "10px", textAlign: "center", fontSize: "0.78rem", fontFamily: "var(--font-mono)", color: c }}>{n}</div>
+          </div>
+
+          <div className="card">
+            <div className="card-title">Case Review Checklist</div>
+            <div style={{ display: "grid", gap: "0.75rem" }}>
+              {analystChecklist.map((item, i) => (
+                <div key={i} style={{ padding: "12px", borderRadius: "8px", border: "1px solid var(--border)", background: "rgba(255,255,255,0.02)", color: "var(--text2)", lineHeight: 1.6 }}>
+                  {item}
+                </div>
               ))}
             </div>
           </div>
@@ -1089,7 +1189,6 @@ function TechnologyPage() {
   );
 }
 
-// ─── DOCUMENTATION PAGE ───────────────────────────────────────────────────────
 function DocumentationPage() {
   const [activeSection, setActiveSection] = useState("overview");
   const endpoints = [
@@ -2007,7 +2106,7 @@ function Footer({ setPage }) {
         <strong>SAFE-LAND-AI</strong>
       </div>
       <div style={{ marginBottom: "0.75rem", display: "flex", justifyContent: "center", gap: "1.5rem", flexWrap: "wrap" }}>
-        {["Home", "About", "Technology", "Documentation", "Dashboard", "Contact"].map(p => (
+        {["Home", "About", "Resources", "Documentation", "Dashboard", "Contact"].map(p => (
           <button key={p} onClick={() => setPage(p)} style={{ background: "none", border: "none", color: "var(--text2)", cursor: "pointer", fontSize: "0.8rem" }}>{p}</button>
         ))}
       </div>
@@ -2104,7 +2203,7 @@ export default function App() {
     switch (page) {
       case "Home":          return <HomePage setPage={setPage} telemetry={telemetry} prediction={prediction} />;
       case "About":         return <AboutPage />;
-      case "Technology":    return <TechnologyPage />;
+      case "Resources":     return <ResourcesPage />;
       case "Documentation": return <DocumentationPage />;
       case "Dashboard":     return <DashboardPage telemetry={telemetry} prediction={prediction} wsStatus={wsStatus} />;
       case "Simulation":    return <SimulationPage />;
@@ -2128,3 +2227,5 @@ export default function App() {
     </ThemeContext.Provider>
   );
 }
+
+

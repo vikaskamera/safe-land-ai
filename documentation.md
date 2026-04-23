@@ -121,7 +121,8 @@ Handles:
 
 Handles:
 
-- training fallback model if no model file exists
+- loading the custom `dataset.csv` telemetry dataset file
+- training fallback model if no model file exists (synthesizes data if `dataset.csv` is missing)
 - loading the saved model
 - single prediction inference
 - risk classification

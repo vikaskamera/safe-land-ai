@@ -130,6 +130,16 @@ The application seeds a demo admin account automatically on startup.
 - Username: `admin`
 - Password: `admin123`
 
+## Step 6: Model Training
+
+The Random Forest prediction model is trained on startup if no existing model is found (`ml_models/crash_detector_model.pkl`).
+It reads the training data from the `dataset.csv` file located in the project root.
+
+To retrain the model with your custom flight data:
+1. Update `dataset.csv` with your custom telemetry and the `crash` target variable (0 or 1).
+2. Delete the old model: `rm ml_models/crash_detector_model.pkl` (or `del ml_models\crash_detector_model.pkl` on Windows).
+3. Restart the backend to automatically retrain the model using the new data.
+
 ## Docker Run
 
 This project is already configured so both frontend and backend start with a single Docker Compose command.

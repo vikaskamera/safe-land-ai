@@ -67,11 +67,23 @@ def generate_training_data(n_samples: int = 5000) -> Tuple[np.ndarray, np.ndarra
 
     return np.array(X), np.array(y)
 
+def load_training_data() -> Tuple[np.ndarray, np.ndarray]:
+    dataset_path = "dataset.csv"
+    if os.path.exists(dataset_path):
+        logger.info(f"Loading training data from {dataset_path}")
+        data = np.genfromtxt(dataset_path, delimiter=',', skip_header=1)
+        X = data[:, :-1]
+        y = data[:, -1]
+        return X, y
+    else:
+        logger.warning(f"{dataset_path} not found. Synthesizing data...")
+        return generate_training_data(5000)
+
 def train_and_save_model():
     os.makedirs("ml_models", exist_ok=True)
     logger.info("Training Random Forest crash detection model...")
 
-    X, y = generate_training_data(5000)
+    X, y = load_training_data()
 
     model = RandomForestClassifier(
         n_estimators=200,
