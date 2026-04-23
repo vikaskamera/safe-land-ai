@@ -16,6 +16,8 @@ class Settings(BaseSettings):
     CORS_ORIGINS: list = ["http://localhost:3000", "http://localhost:3001"]
 
     MODEL_PATH: str = "ml_models/crash_detector_model.pkl"
+    MODEL_ARTIFACT_PATH: str = "ml_models/prediction_bundle.joblib"
+    ENSEMBLE_METHOD: str = "average"
     LOG_PATH: str = "logs/app.log"
 
     @field_validator("DEBUG", mode="before")

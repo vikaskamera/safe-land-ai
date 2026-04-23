@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from typing import List
 from core.database import get_db
@@ -13,16 +13,20 @@ router = APIRouter(prefix="/api", tags=["Predictions"])
 @router.post("/predict", response_model=PredictionOutput)
 def predict(
     payload: PredictionInput,
+    ensemble_method: str | None = Query(default=None),
     db: Session = Depends(get_db),
     current_user: User = Depends(require_pilot_or_admin)
 ):
     features = payload.dict()
-    result = prediction_service.predict(features)
+    try:
+        result = prediction_service.predict(features, ensemble_method=ensemble_method)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
 
     record = FlightRecord(
         user_id=current_user.id,
         **features,
-        prediction_probability=result["prediction_probability"],
+        prediction_probability=result["impact_score"],
         risk_level=result["risk_level"]
     )
     db.add(record)
@@ -33,18 +37,26 @@ def predict(
 @router.post("/predict/preview", response_model=PredictionOutput)
 def predict_preview(
     payload: PredictionInput,
+    ensemble_method: str | None = Query(default=None),
     current_user: User = Depends(require_pilot_or_admin)
 ):
-    return prediction_service.predict(payload.dict())
+    try:
+        return prediction_service.predict(payload.dict(), ensemble_method=ensemble_method)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
 
 @router.post("/predict/batch")
 def predict_batch(
     payload: BatchPredictionRequest,
+    ensemble_method: str | None = Query(default=None),
     current_user: User = Depends(require_pilot_or_admin)
 ):
     results = []
     for record in payload.records:
-        result = prediction_service.predict(record.dict())
+        try:
+            result = prediction_service.predict(record.dict(), ensemble_method=ensemble_method)
+        except ValueError as exc:
+            raise HTTPException(status_code=422, detail=str(exc)) from exc
         results.append(result)
     return {"results": results, "total": len(results)}
 
@@ -85,6 +97,6 @@ def explain(current_user: User = Depends(get_current_user)):
     importances = prediction_service.get_feature_importance()
     return {
         "feature_importances": importances,
-        "model_version": "RandomForest-v1.0",
+        "model_version": "RF+XGB-Ensemble-v2.0",
         "total_features": len(importances)
     }

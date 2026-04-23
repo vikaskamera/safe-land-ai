@@ -2,6 +2,14 @@ from pydantic import BaseModel, Field
 from typing import Optional, List
 from datetime import datetime
 
+
+class PredictionConfig(BaseModel):
+    ensemble_method: Optional[str] = Field(
+        default=None,
+        description="Inference strategy: rf_only, xgb_only, average, weighted, stacking",
+    )
+
+
 class PredictionInput(BaseModel):
     altitude: float = Field(..., ge=0, le=50000, description="Altitude in feet")
     velocity: float = Field(..., ge=0, le=1000, description="Airspeed in knots")
@@ -17,6 +25,8 @@ class PredictionInput(BaseModel):
     visibility: float = Field(..., ge=0, description="Visibility in statute miles")
 
 class PredictionOutput(BaseModel):
+    impact_score: float
+    model_used: str
     prediction_probability: float
     risk_level: str
     risk_score: int

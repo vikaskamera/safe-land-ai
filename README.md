@@ -69,6 +69,8 @@ REFRESH_TOKEN_EXPIRE_DAYS=7
 DATABASE_URL=sqlite:///./safe_land.db
 CORS_ORIGINS=["http://localhost:3000","http://localhost:3001"]
 MODEL_PATH=ml_models/crash_detector_model.pkl
+MODEL_ARTIFACT_PATH=ml_models/prediction_bundle.joblib
+ENSEMBLE_METHOD=average
 LOG_PATH=logs/app.log
 ```
 
@@ -117,6 +119,39 @@ Backend endpoints:
 ```powershell
 cd c:\Users\VICKY\Downloads\files\safe-land-ai\apps\web
 cmd /c npm start
+```
+
+## Model Retraining And Evaluation
+
+Train or refresh the bundled RF + XGBoost artifacts:
+
+```powershell
+cd c:\Users\VICKY\Downloads\files\safe-land-ai
+@'
+from services.prediction_service import train_and_save_model
+train_and_save_model()
+'@ | python -
+```
+
+Compare standalone and ensemble performance:
+
+```powershell
+cd c:\Users\VICKY\Downloads\files\safe-land-ai
+python scripts/evaluate_models.py
+```
+
+Switch inference mode without changing request payloads by setting:
+
+- `ENSEMBLE_METHOD=rf_only`
+- `ENSEMBLE_METHOD=xgb_only`
+- `ENSEMBLE_METHOD=average`
+- `ENSEMBLE_METHOD=weighted`
+- `ENSEMBLE_METHOD=stacking`
+
+You can also override the method per request on `/api/predict` with the query string:
+
+```text
+/api/predict?ensemble_method=stacking
 ```
 
 Frontend:
